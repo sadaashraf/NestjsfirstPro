@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCrudDto } from './dto/create-crud.dto';
 import { UpdateCrudDto } from './dto/update-crud.dto';
 import { Repository } from 'typeorm';
@@ -22,14 +22,27 @@ export class CrudService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} crud`;
+    const crud = this.crudRepository.findOneBy({ id });
+    return crud
+
   }
 
-  update(id: number, updateCrudDto: UpdateCrudDto) {
-    return `This action updates a #${id} crud`;
+  async update(id: number, updateCrudDto: UpdateCrudDto) {
+    const crud = await this.crudRepository.findOneBy({ id });
+    // const crud = this.crudRepository.find({ where: { id } })
+    if (!crud) {
+      return new NotFoundException('id not found')
+    }
+    Object.assign(crud, updateCrudDto)
+    return this.crudRepository.save(crud)
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} crud`;
+  async remove(id: number) {
+    const crud = await this.crudRepository.findOneBy({ id });
+    // const crud = this.crudRepository.find({ where: { id } })
+    if (!crud) {
+      return new NotFoundException('id not found')
+    }
+    return this.crudRepository.delete(id)
   }
 }
