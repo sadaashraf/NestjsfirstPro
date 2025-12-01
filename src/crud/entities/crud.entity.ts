@@ -7,4 +7,10 @@ export class Crud {
 
   @Column()
   name: string
+
+  @Column({ nullable: true })
+  age: number;
+
+  @Column()
+  class: string;
 }
